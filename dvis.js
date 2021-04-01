@@ -44,7 +44,7 @@ function setup() {
 
   cText = color(200,200,200);
   cHigh = color(0, 238, 255);
-  cLow = color(135, 204, 123);
+  cLow = color(159, 109, 214);
 
 
   c1 = color(176, 57, 57); //red
@@ -112,14 +112,14 @@ function draw(){
     });
 
     cHigh = hueShift(cHigh);
-    cHex = pColorToHexStr(cHigh);
+    cHex = pColorToHexStr(c1);
     clHex = pColorToHexStr(cLow);
 
     lamStr = `\\textcolor{${cHex}}{\\lambda_1}`;
     x0Str =`\\textcolor{${clHex}}{x_1(0)}`
 //Equation for \lambda
 //E
-    dEig1.color = cHigh;
+    dEig1.color = c1;
     dEig1.updateEq(`${lamStr}=${mouseX}`)
 
     dX0.color = cLow;
@@ -129,8 +129,8 @@ function draw(){
 
     //simpleStr = `x_1(t) = x_1(0) \\exp(\\Re(\\lambda_1)t) \\cos(\\Im(\\lambda_1) t) `;
     colorStr = `x_1(t) = ${x0Str} `
-    colorStr += `\\exp(\\Re(${lamStr}) t) `
-    colorStr += `\\cos(\\Im(${lamStr}) t) `;
+    colorStr += `\\exp(\\operatorname{Re}(${lamStr}) t) `
+    colorStr += `\\cos(\\operatorname{Im}(${lamStr}) t) `;
 
     //'x_1(t) = \\CH{x_1(0)} \\exp({\\CY{\\Re(\\lambda_1)}t}) \\cos({\\CB{\\Im(\\lambda_1)} t}) '
     //'
