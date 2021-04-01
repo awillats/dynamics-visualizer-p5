@@ -1,3 +1,38 @@
+/* TO DO
+ * plot any 2D trajectory
+ * look for dynamical system libraries
+ *  https://github.com/JuliaDynamics/DynamicalSystems.jl/blob/master/docs/src/index.md
+ *      LSIM discretizes anyway...
+ *      so just need to hold system props, convert to discrete time
+ *      then matrix multiply (mat vec multiply)
+ *
+ *      can use math.js to get eigenvalues of 2D matrices
+ *      https://mathjs.org/docs/reference/functions/eigs.html
+ *
+ *  https://mlweb.loria.fr/benchmark/index.html
+ *      numeric.js
+ *
+ *     port of Eigen from C++
+ *      https://www.npmjs.com/package/eigen
+ *
+ *     can I call C++?
+ *          https://emscripten.org/docs/porting/connecting_cpp_and_javascript/index.html
+ *          https://stackoverflow.com/questions/27198437/is-there-a-way-to-use-c-in-javascript
+ *
+ * hardcode axes
+ */
+
+/* FUN STUFF
+
+ SHould I be using CindyJs??
+ https://cindyjs.org/gallery/cindygl/
+can calculate eigenvalues
+ https://cindyjs.org/ref/Alphabetical_Function_Index.html
+
+
+ *
+ */
+
 let tex;
 let texMouse;
 let colorHeader;
@@ -20,8 +55,6 @@ let tyOff;
 let dEq;
 let dEig1;
 let dX0;
-
-
 
 let dragArray;
 
