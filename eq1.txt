@@ -42,7 +42,12 @@ b_{2}
 \textrm{its current state plus a term} \\
 \textrm{which describes the influence of \CB{external inputs}}
 \\~\\
-x_1(t) = e^{-\CR{\lambda_1} t}
-\\
-\textrm{\CR{eigenvalues} scale the rate of decay for trajectores of } x(t)\\
-\textrm{in the direction of the associated eignevector}
+x_1(t) = \CL{x_1(0)} e^{\CR{\lambda_1} t}
+\\~\\
+\textrm{(the real part of) the \CR{eigenvalues} scale the rate of decay}\\
+\textrm{for trajectories of } x(t) \textrm{ in the direction of} \\
+\textrm{the associated eignevector.}
+\\~\\
+\textrm{(the imaginary part of) the \CR{eigenvalues} scale the rate of oscillation}\\
+\textrm{for trajectories of } x(t)
+\\~\\

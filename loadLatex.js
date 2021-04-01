@@ -1,10 +1,11 @@
 
-function setupLatexColors(cText,cHigh,c1,c2,c3)
+function setupLatexColors(cText,cHigh,cLow,c1,c2,c3)
 {
     eqStr = ""
     //cMain, cBracket, cInner must be defined, either here or in eq1.txt
     eqStr += buildColorDef("cMain", pColorToHexStr(cText))
     eqStr += buildColorMacro("CH", pColorToHexStr(cHigh))
+    eqStr += buildColorMacro("CL", pColorToHexStr(cLow))
 
     eqStr += buildColorMacro("CR", pColorToHexStr(c1))
     eqStr += buildColorMacro("CB", pColorToHexStr(c2))
