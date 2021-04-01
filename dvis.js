@@ -1,3 +1,38 @@
+/* TO DO
+ * plot any 2D trajectory
+ * look for dynamical system libraries
+ *  https://github.com/JuliaDynamics/DynamicalSystems.jl/blob/master/docs/src/index.md
+ *      LSIM discretizes anyway...
+ *      so just need to hold system props, convert to discrete time
+ *      then matrix multiply (mat vec multiply)
+ *
+ *      can use math.js to get eigenvalues of 2D matrices
+ *      https://mathjs.org/docs/reference/functions/eigs.html
+ *
+ *  https://mlweb.loria.fr/benchmark/index.html
+ *      numeric.js
+ *
+ *     port of Eigen from C++
+ *      https://www.npmjs.com/package/eigen
+ *
+ *     can I call C++?
+ *          https://emscripten.org/docs/porting/connecting_cpp_and_javascript/index.html
+ *          https://stackoverflow.com/questions/27198437/is-there-a-way-to-use-c-in-javascript
+ *
+ * hardcode axes
+ */
+
+/* FUN STUFF
+
+ SHould I be using CindyJs??
+ https://cindyjs.org/gallery/cindygl/
+can calculate eigenvalues
+ https://cindyjs.org/ref/Alphabetical_Function_Index.html
+
+
+ *
+ */
+
 let tex;
 let texMouse;
 let colorHeader;
@@ -21,8 +56,6 @@ let dEq;
 let dEig1;
 let dX0;
 
-
-
 let dragArray;
 
 
@@ -44,7 +77,7 @@ function setup() {
 
   cText = color(200,200,200);
   cHigh = color(0, 238, 255);
-  cLow = color(135, 204, 123);
+  cLow = color(159, 109, 214);
 
 
   c1 = color(176, 57, 57); //red
@@ -112,14 +145,14 @@ function draw(){
     });
 
     cHigh = hueShift(cHigh);
-    cHex = pColorToHexStr(cHigh);
+    cHex = pColorToHexStr(c1);
     clHex = pColorToHexStr(cLow);
 
     lamStr = `\\textcolor{${cHex}}{\\lambda_1}`;
     x0Str =`\\textcolor{${clHex}}{x_1(0)}`
 //Equation for \lambda
 //E
-    dEig1.color = cHigh;
+    dEig1.color = c1;
     dEig1.updateEq(`${lamStr}=${mouseX}`)
 
     dX0.color = cLow;
@@ -129,8 +162,8 @@ function draw(){
 
     //simpleStr = `x_1(t) = x_1(0) \\exp(\\Re(\\lambda_1)t) \\cos(\\Im(\\lambda_1) t) `;
     colorStr = `x_1(t) = ${x0Str} `
-    colorStr += `\\exp(\\Re(${lamStr}) t) `
-    colorStr += `\\cos(\\Im(${lamStr}) t) `;
+    colorStr += `\\exp(\\operatorname{Re}(${lamStr}) t) `
+    colorStr += `\\cos(\\operatorname{Im}(${lamStr}) t) `;
 
     //'x_1(t) = \\CH{x_1(0)} \\exp({\\CY{\\Re(\\lambda_1)}t}) \\cos({\\CB{\\Im(\\lambda_1)} t}) '
     //'
