@@ -1,0 +1,18 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #232325;
+}
+canvas {
+  display: block;
+}
+/* renders all paragraph blocks unselectable, handy if you're draggging things around */
+/* https://stackoverflow.com/questions/2310734/how-to-make-html-text-unselectable */
+p {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
