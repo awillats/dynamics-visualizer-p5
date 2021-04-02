@@ -1,16 +1,14 @@
 //https://editor.p5js.org/codingtrain/sketches/U0R5B6Z88
 
-class Draggable {
+class Draggable extends p5.Vector{
     constructor(x=100, y=100) {
+        super(x,y)
         this.dragging = false;
         this.rollover = false;
-
-        this.x = x;
-        this.y = y;
         this.hw = 10;
         this.hh = 10;
-
         this.color = color(255, 241, 147);
+        this.children = [];
     }
 
     over(){
@@ -38,11 +36,16 @@ class Draggable {
         } else {
           fill(this.color);
         }
+        this.drawCircle();
+
+    }
+    drawCircle()
+    {
         ellipse(this.x, this.y, this.hw);
     }
-
     pressed(){
         if (this.isInHitbox()){
+            print("Clicked me!")
             this.dragging = true;
             this.offsetX = this.x - mouseX;
             this.offsetY = this.y - mouseY;
@@ -62,6 +65,70 @@ class Draggable {
         return (mouseX > this.x-this.hw && mouseX < this.x+this.hw && mouseY > this.y-this.hh && mouseY < this.y+this.hh);
     }
 }
+
+/*
+
+Likely we want this(.vec) to be the x0 of the trajectory in visual space
+- have some map to
+Do we want to move the origin of the trajec
+
+
+ */
+
+
+class DraggableTrajectory extends Draggable {
+    constructor(x,y, dt=0.1, nSteps=5000) {
+        super(x,y)
+        this.color = color(120, 206, 214);//color('blue');//color(255, 248, 68)
+
+        this.origin = new Draggable(0,0);
+        this.origin.color = color(0,0,0,0);
+        this.children.push(this.origin)
+
+        this.trajArray = [];
+        this.timeArray = [];
+        this.dt = dt;
+
+
+        this.nSteps = nSteps;
+    }
+    show() {
+        //super.show()
+        if (this.rollover)
+        {
+            fill(255);
+        }
+        else
+        {
+            noFill();
+        }
+        stroke(this.color);
+        strokeWeight(2)
+        ellipse(this.origin.x,this.origin.y,this.hw)
+        ellipse(this.x,this.y,50)
+        //drawArrow(this.origin,this.copy().sub(this.origin),'red')
+
+
+        push();
+        translate(this.origin.x, this.origin.y)
+
+        plotTX(this.timeArray, this.trajArray)
+        plotVecArray(this.trajArray)
+        pop();
+
+    }
+    generateMyTrajectory(x0,mat)
+    {
+        let XT = generateTrajectory(x0,mat,this.dt,this.nSteps);
+        this.trajArray = XT[0];
+        this.timeArray = XT[1];
+    }
+}
+
+
+
+
+
 
 class DraggableEquation extends Draggable {
     constructor(x,y, eqStr) {
@@ -97,8 +164,7 @@ class DraggableEquation extends Draggable {
         else {
             katex.render('', this.texSpec.elt)
         }
-
-        ellipse(this.x,this.y,this.hw)
+        this.drawCircle();
 
     }
 

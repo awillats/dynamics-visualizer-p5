@@ -55,8 +55,12 @@ let tyOff;
 let dEq;
 let dEig1;
 let dX0;
+let dT;
 
-let dragArray;
+let Amat;
+
+let dragArray = [];
+let pVecArray = [];
 
 
 function preload()
@@ -108,12 +112,26 @@ function setup() {
   dX0 = new DraggableEquation(320,100, colorHeader);
   dX0.color = cLow;
 
-  dragArray = [];
+  dT = new DraggableTrajectory(60,60, 0.04,6000)
+  dT.origin.set(createVector(width/2,height/2))
+  Amat = rotationMatrix(Math.PI/2.1)
+  Amat = math.multiply(Amat,-.99);
+/*
+  lam1 = -.1
+  lam2 = -.1
+  Amat = math.matrix([[lam1,0],[0,lam2]])
+*/
   addDraggable(dEq);
   addDraggable(dEig1);
+  addDraggable(dT);
+
   addDraggable(dX0);
 
-
+  for (let i=0; i<20; i++)
+  {
+      let v = p5.Vector.random2D();
+      pVecArray.push(v.mult(100));
+  }
 
  // dEq.updateEq('\\CR{\\lambda_1} = 1')
 
@@ -132,12 +150,12 @@ function drawFore(){
 function draw(){
   drawBack();
   fill(c3);
-  //ellipse(px,py,20)
-/*
-  texMouse.position(px+txOff,py+tyOff)
-  let lam = px / width;
-  katex.render(colorHeader+`{x_1(t)} = exp^{(- \\CR{ ${lam.toFixed(2)} } t )}`, texMouse.elt)
-*/
+
+    x0 = createVector(dX0.x-width/2,dX0.y-height/2)
+    dT.generateMyTrajectory(x0, Amat)
+
+    //drawArrow(dT.origin,x0,'white')
+    // draw all anchors
     dragArray.forEach(function(item,index){
         item.update();
         item.over();
@@ -151,14 +169,13 @@ function draw(){
     lamStr = `\\textcolor{${cHex}}{\\lambda_1}`;
     x0Str =`\\textcolor{${clHex}}{x_1(0)}`
 //Equation for \lambda
-//E
+//
     dEig1.color = c1;
     dEig1.updateEq(`${lamStr}=${mouseX}`)
 
     dX0.color = cLow;
     dX0.updateEq(`${x0Str}=${mouseY}`)
 //Equation for x(t)
-
 
     //simpleStr = `x_1(t) = x_1(0) \\exp(\\Re(\\lambda_1)t) \\cos(\\Im(\\lambda_1) t) `;
     colorStr = `x_1(t) = ${x0Str} `
@@ -179,11 +196,12 @@ function draw(){
 
 function addDraggable(drag){
     dragArray.push(drag);
+    for (child of drag.children){ dragArray.push(child) }
 }
 function mousePressed(){
 
     dragArray.forEach(function(item,index){ item.pressed();} );
-    dEq.doShowEq();
+    //dEq.doShowEq();
 }
 
 function mouseDragged(){
@@ -193,5 +211,40 @@ function mouseDragged(){
 
 function mouseReleased(){
     dragArray.forEach(function(item,index){ item.released();} );
-    dEq.doHideEq();
+    //dEq.doHideEq();
+}
+
+function plotTX(tAry, xAry)
+{
+    beginShape();
+    noFill();
+    for (let i = 0; i<tAry.length; i++)
+    {
+        vertex(tAry[i]*3, math.re(xAry[i].y))
+    }
+    endShape();
+}
+function plotVecArray(vAry,v0=createVector(0,0))
+{
+    beginShape();
+    noFill();
+    vAry.forEach((item, i) => {
+        //console.log(i)
+        vertex(item.x+v0.x, item.y+v0.y)
+    });
+    endShape();
+}
+// draw an arrow for a vector at a given base position
+function drawArrow(base, vec, myColor) {
+  push();
+  stroke(myColor);
+  strokeWeight(3);
+  fill(myColor);
+  translate(base.x, base.y);
+  line(0, 0, vec.x, vec.y);
+  rotate(vec.heading());
+  let arrowSize = 7;
+  translate(vec.mag() - arrowSize, 0);
+  triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+  pop();
 }
