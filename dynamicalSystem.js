@@ -27,6 +27,8 @@ function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
     //2.) loop through in mathjsVec
 
 /*
+ *
+ */
     for (let i=0; i<nSteps; i++)
     {
         tAry.push(t+=dt)
@@ -46,8 +48,8 @@ function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
     {
         vAry.push( mathVec2pVec(vMathArray[i]) )
     }
-*/
 
+/*
     for (let i = 0; i<nSteps; i++)
     {
         tAry.push(t+=dt)
@@ -69,7 +71,7 @@ function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
         dv.mult(dt);
         v = v.add(dv);
     }
-    /*
+
 */
 
 

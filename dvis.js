@@ -1,6 +1,14 @@
 /* TO DO
 
 POLISH
+    - draw yellow derivative vector!!
+        -  color code X as light purple??
+
+    - remove clone of Eig1 (think it has to do with adding child node twice?)
+        - 1 drives 2 just defined
+        - 2 driving 1 has a delay
+
+
     - handle position of time trajectory relative to phase plane
         -
         -
@@ -171,7 +179,7 @@ function setup() {
     let nSimPoints = 6000;
 
     dT = new DraggableTrajectory(dX0.x,dX0.y, dtSim, nSimPoints)
-    dT.origin.set(createVector(350,100))
+    dT.origin.set(createVector(275,100))
     dT.hw = 30;
     /*
     let aLam1 = math.complex({re:-0.1, im:0.8});
