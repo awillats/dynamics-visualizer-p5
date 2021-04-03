@@ -4,8 +4,9 @@ function hueShift(pColor)
 
     let h = (hue(pColor)+3 ) %255;
     let s = saturation(pColor);
-    let l = brightness(pColor)
-    let c = color(h,s,l)
+    let l = brightness(pColor);
+    let a = alpha(pColor);
+    let c = color(h,s,l,a)
     colorMode(RGB,255);
     return c;
 
@@ -21,7 +22,9 @@ function lightenColor(pColor)
     let r = red(pColor);
     let g = green(pColor);
     let b = blue(pColor);
-    let cOut = color(r*L,g*L,b*L);
+    let a = alpha(pColor);
+
+    let cOut = color(r*L,g*L,b*L,a);
     //colorMode(RGB,255);
     return cOut;
 }

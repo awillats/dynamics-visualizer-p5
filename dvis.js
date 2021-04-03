@@ -1,5 +1,26 @@
 /* TO DO
- * plot any 2D trajectory
+
+CORRECT NUMERICAL PRECISION
+    idea 1: don't flip between representations
+    - keep everything in math.js
+    -
+
+    idea 2: calculate at higher precision
+
+    idea 3: just make dt smaller :)
+    - 0.001 works!
+
+POLISH
+    - handle position of time trajectory relative to phase plane
+        -
+        -
+    - ADD AXES - to phase plane
+    - rollover effect for phase plane?
+    - when explainer text is hovered-over, point to relevant
+
+
+POSTPONED
+
  * look for dynamical system libraries
  *  https://github.com/JuliaDynamics/DynamicalSystems.jl/blob/master/docs/src/index.md
  *      LSIM discretizes anyway...
@@ -19,7 +40,6 @@
  *          https://emscripten.org/docs/porting/connecting_cpp_and_javascript/index.html
  *          https://stackoverflow.com/questions/27198437/is-there-a-way-to-use-c-in-javascript
  *
- * hardcode axes
  */
 
 /* FUN STUFF
@@ -28,7 +48,6 @@
  https://cindyjs.org/gallery/cindygl/
 can calculate eigenvalues
  https://cindyjs.org/ref/Alphabetical_Function_Index.html
-
 
  *
  */
@@ -40,27 +59,25 @@ let eqStr;
 
 let cBack;
 let cHigh;
-let c1;
-let c2;
-let c3;
+let c1, c2, c3;
+
 let textIn;
 // = color(242, 212, 134);
 //   console.log(textIn)
 
-let px;
-let py;
-let txOff;
-let tyOff;
+let px, py
+let txOff, tyOff;
+
 
 let dEq;
-let dEig1;
+let dEig1, dEig2;
+
 let dX0;
 let dT;
 
 let Amat;
 
 let dragArray = [];
-let pVecArray = [];
 
 
 function preload()
@@ -70,75 +87,127 @@ function preload()
 
 
 function setup() {
-  createCanvas(620, 600);
-  colorMode(RGB,255);
-  px = width / 5.0;
-  py = height / 5.0;
-  txOff = -100;//20;
-  tyOff = -30;// -45;
+    createCanvas(1000, 600);
+    colorMode(RGB,255);
+    px = width / 5.0;
+    py = height / 5.0;
+    txOff = -100;//20;
+    tyOff = -30;// -45;
 
-  cBack = color(42,42,45);
+    cBack = color(42,42,45);
 
-  cText = color(200,200,200);
-  cHigh = color(0, 238, 255);
-  cLow = color(159, 109, 214);
+    cText = color(200,200,200);
+    cHigh = color(0, 238, 255);
+    cLow = color(159, 109, 214);
 
 
-  c1 = color(176, 57, 57); //red
-  c2 = color(77, 150, 213); //blue
-  c3 = color(241, 234, 143); //yellow
+    c1 = color(176, 57, 57); //red
+    c2 = color(77, 150, 213); //blue
+    c3 = color(241, 234, 143); //yellow
 
   background(cBack)
 
-// add colors and eq1.txt to latex input
-  colorHeader = setupLatexColors(cText, cHigh,cLow, c1, c2, c3);
-  eqStr = colorHeader+textIn.join(' ');
+    // add colors and eq1.txt to latex input
+    colorHeader = setupLatexColors(cText, cHigh,cLow, c1, c2, c3);
+    eqStr = colorHeader+textIn.join(' ');
 
-//render LaTeX
-  tex = createP();
-  tex.style('font-size', '12px');
-  tex.position(50, height-300);
-  katex.render(eqStr, tex.elt);
+    //render LaTeX
+    tex = createP();
+    tex.style('font-size', '12px');
+    tex.position(50, height-300);
+    katex.render(eqStr, tex.elt);
 
-  texMouse = createP();
-  texMouse.style('font-size', '25px');
+    texMouse = createP();
+    texMouse.style('font-size', '25px');
 
-  dEq = new DraggableEquation(60,300, colorHeader);
-  dEq.color = cLow;
+    // TODO: replace class definitions to accept colors on construct
+    dEq = new DraggableEquation(450,200, cLow, colorHeader);
+    dEig1 = new DraggableEquation(120,90, c1, colorHeader);
+    dEig2 = new DraggableEquation(120,110, c1, colorHeader);
 
-  dEig1 = new DraggableEquation(120,100, colorHeader);
-  dEig1.color = c1;
+    //dEig2 = new DraggableEquation(120,110, c1, colorHeader);
+    dX0 = new DraggableEquation(350,30, cLow, colorHeader);
 
-  dX0 = new DraggableEquation(320,100, colorHeader);
-  dX0.color = cLow;
 
-  dT = new DraggableTrajectory(60,60, 0.04,6000)
-  dT.origin.set(createVector(width/2,height/2))
-  Amat = rotationMatrix(Math.PI/2.1)
-  Amat = math.multiply(Amat,-.99);
-/*
-  lam1 = -.1
-  lam2 = -.1
-  Amat = math.matrix([[lam1,0],[0,lam2]])
-*/
-  addDraggable(dEq);
-  addDraggable(dEig1);
-  addDraggable(dT);
+  //This links need to be child-specific!!!
+  //Map out the connections!!
 
-  addDraggable(dX0);
 
-  for (let i=0; i<20; i++)
-  {
-      let v = p5.Vector.random2D();
-      pVecArray.push(v.mult(100));
-  }
+    dEig1.origin.set(150,100)
+    //dEig1.xScale = 0.1;
+    dEig1.setScale(.1)
+    dEig1.xScale = 0.01;
 
- // dEq.updateEq('\\CR{\\lambda_1} = 1')
+    dEig1.xSnap = 5;
+    dEig1.doSnap = true;
 
-  //mirror position of eqs
-  // dEq = new DraggableEquation(50, 100, colorHeader);
-  //dEq.updateEq('x_1(t) = e^{-\\CB{\\lambda_1} t}')
+    dEig2.origin.set(150,100)
+    dEig2.setScale(.1)
+    dEig2.xScale = 0.01;
+
+    dEig2.xSnap = 5;
+    dEig2.doSnap = true;
+
+
+
+    //dEig2.xScale = 0.1;
+
+
+
+
+    //demoFun = (driver, child) => child.color = color('white')
+    mirrorY = (driver, child) => child.set( driver.x, 2*driver.origin.y-driver.y ) ;
+    // updateX0 = (driver, child) =>
+    // {
+    //   //  child.setX0( driver.getX0() )
+    // }
+
+    linkPoints(dEig1, dEig2, mirrorY)
+
+
+    //linkPoints(dX0, dEq, updateX0)
+
+    //Initial trajectory
+    dT = new DraggableTrajectory(dX0.x,dX0.y, 0.001,6000)
+    dT.origin.set(createVector(350,100))
+    dT.hw = 30;
+    let aLam1 = math.complex({re:-0.1, im:0.8});
+    let aLam2 = math.complex({re:-0.1, im:-0.8});
+    dT.Amat = generate2Dsys(aLam1,aLam2);
+
+
+
+    let nudge = (driver, child) =>
+    {
+        child.add(driver.moveDelta)
+    //    child.set
+    }
+
+    dT.origin.children.push(dT);
+    //When the origin moves, move the endPoint by the same delta
+    dT.origin.linkFun = nudge;
+
+    dT.origin.children.push(dX0);
+
+
+    //stand-in for getLam method which would use relative position
+    //dEig1.getLam = () => math.complex({re:-0.3, im:0.8});
+    // updateLam = (driver,child) => dT.updateSys( driver.getLam() );
+
+    // dEig1.children.push(dT)
+    //dEig1.linkFun = updateLam;
+
+    addDraggable(dEq);
+    addDraggable(dEig1);
+    addDraggable(dEig2);
+    addDraggable(dT);
+    addDraggable(dX0);
 }
+// function setColor(d, clr)
+// {
+//     d.color = clr;
+// }
+
 
 function drawBack(){
     background(cBack);
@@ -148,11 +217,27 @@ function drawFore(){
     katex.render(eqStr, tex.elt);
 }
 function draw(){
-  drawBack();
-  fill(c3);
+    drawBack();
+    fill(c3);
 
-    x0 = createVector(dX0.x-width/2,dX0.y-height/2)
-    dT.generateMyTrajectory(x0, Amat)
+
+
+// Update dynamical system
+    //could be moved to a listener so it only updates when x0 updates?
+    x0 = createVector(dX0.x-width/2,dX0.y-height/2);
+
+
+
+    //let aLam1 = math.complex({re:-0.1, im:0.8});
+    //let aLam2 = math.complex({re:-0.1, im:-0.8});
+
+    let aLam1 = vec2complex(dEig1.getValue())
+    let aLam2 = vec2complex(dEig2.getValue())
+
+    dT.Amat = generate2Dsys(aLam1,aLam2);
+    dT.generateMyTrajectory();
+
+
 
     //drawArrow(dT.origin,x0,'white')
     // draw all anchors
@@ -162,44 +247,58 @@ function draw(){
         item.show();
     });
 
+
+
     cHigh = hueShift(cHigh);
     cHex = pColorToHexStr(c1);
     clHex = pColorToHexStr(cLow);
 
     lamStr = `\\textcolor{${cHex}}{\\lambda_1}`;
-    x0Str =`\\textcolor{${clHex}}{x_1(0)}`
+    lamStr2 = `\\textcolor{${cHex}}{\\lambda_2}`;
+
+    x0Str =`\\textcolor{${clHex}}{x(0)}`
+    x10Str =`\\textcolor{${clHex}}{x_1(0)}`
 //Equation for \lambda
 //
     dEig1.color = c1;
-    dEig1.updateEq(`${lamStr}=${mouseX}`)
+    dEig1.updateEq(`${lamStr}=${getLamStr(dEig1)}`)
+
+    dEig2.color = c1;
+    dEig2.updateEq(`${lamStr2}=${getLamStr(dEig2)}`)
 
     dX0.color = cLow;
-    dX0.updateEq(`${x0Str}=${mouseY}`)
+
+    let x0traj = dT.getValue();
+    x0traj.y *= -1; //for some reason this is wrong
+
+    dX0.updateEq(`${x0Str}= ${colVecStr(x0traj)}`)
 //Equation for x(t)
 
     //simpleStr = `x_1(t) = x_1(0) \\exp(\\Re(\\lambda_1)t) \\cos(\\Im(\\lambda_1) t) `;
-    colorStr = `x_1(t) = ${x0Str} `
-    colorStr += `\\exp(\\operatorname{Re}(${lamStr}) t) `
-    colorStr += `\\cos(\\operatorname{Im}(${lamStr}) t) `;
+    colorStr = `x_1(t) = ${x10Str} \\,`
+    colorStr += `\\exp( \\operatorname{Re}(${lamStr}) t ) \\,`
+    colorStr += `\\cos( \\operatorname{Im}(${lamStr}) t ) `;
 
     //'x_1(t) = \\CH{x_1(0)} \\exp({\\CY{\\Re(\\lambda_1)}t}) \\cos({\\CB{\\Im(\\lambda_1)} t}) '
     //'
-    dEq.color = cLow;
-    dEq.updateEq(colorStr)
+    dEq.color = cLow ;
+    dEq.updateEq(colorStr) ;
 
+
+
+    drawEigenAxes(dEig1);
   //tex.position(px,py)
   //katex.render("x(t)",tex.elt)
   //
   //    drawFore();
 }
-
+// end draw
 
 function addDraggable(drag){
     dragArray.push(drag);
     for (child of drag.children){ dragArray.push(child) }
 }
 function mousePressed(){
-
     dragArray.forEach(function(item,index){ item.pressed();} );
     //dEq.doShowEq();
 }
@@ -214,37 +313,7 @@ function mouseReleased(){
     //dEq.doHideEq();
 }
 
-function plotTX(tAry, xAry)
+function colVecStr(xVec)
 {
-    beginShape();
-    noFill();
-    for (let i = 0; i<tAry.length; i++)
-    {
-        vertex(tAry[i]*3, math.re(xAry[i].y))
-    }
-    endShape();
-}
-function plotVecArray(vAry,v0=createVector(0,0))
-{
-    beginShape();
-    noFill();
-    vAry.forEach((item, i) => {
-        //console.log(i)
-        vertex(item.x+v0.x, item.y+v0.y)
-    });
-    endShape();
-}
-// draw an arrow for a vector at a given base position
-function drawArrow(base, vec, myColor) {
-  push();
-  stroke(myColor);
-  strokeWeight(3);
-  fill(myColor);
-  translate(base.x, base.y);
-  line(0, 0, vec.x, vec.y);
-  rotate(vec.heading());
-  let arrowSize = 7;
-  translate(vec.mag() - arrowSize, 0);
-  triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
-  pop();
+    return `\\begin{bmatrix} ${xVec.x} \\\\ ${xVec.y} \\end{bmatrix} `
 }
