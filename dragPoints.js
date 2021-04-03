@@ -204,6 +204,7 @@ class DraggableTrajectory extends Draggable {
 
         this.trajectoryStartFun = () => translate(this.getValue().x, 0)
         //for some reason already translated to this.y ?
+        this.tScale = 75;
     }
     show() {
         //super.show()
@@ -224,7 +225,7 @@ class DraggableTrajectory extends Draggable {
 //PLOT trajectory vs time
         push()
         this.trajectoryStartFun();
-        plotTX(this.timeArray, this.trajArray, 2)
+        plotTX(this.timeArray, this.trajArray, 2, this.tScale)
         pop()
 
 //PLOT trajectory in phase spcae

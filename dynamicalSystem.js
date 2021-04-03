@@ -1,11 +1,15 @@
 function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
     dt=0.01, nSteps=100, )
 {
-    math.config({
-      number: 'BigNumber',      // Default type of number:
-                                // 'number' (default), 'BigNumber', or 'Fraction'
-      precision: 128             // Number of significant digits for BigNumbers
-    })
+
+    // math.config({
+    //   number: 'BigNumber',      // Default type of number:
+    //                             // 'number' (default), 'BigNumber', or 'Fraction'
+    //   precision: 128             // Number of significant digits for BigNumbers
+    // })
+    // math.config({
+    //     number: 'number',
+    // })
 
 
     let tAry = [];
@@ -22,6 +26,7 @@ function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
     vMathArray = []
     //2.) loop through in mathjsVec
 
+/*
     for (let i=0; i<nSteps; i++)
     {
         tAry.push(t+=dt)
@@ -41,8 +46,8 @@ function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
     {
         vAry.push( mathVec2pVec(vMathArray[i]) )
     }
+*/
 
-/*
     for (let i = 0; i<nSteps; i++)
     {
         tAry.push(t+=dt)
@@ -64,6 +69,7 @@ function generateTrajectory(x0, mat=rotationMatrix(Math.PI/2),
         dv.mult(dt);
         v = v.add(dv);
     }
+    /*
 */
 
 

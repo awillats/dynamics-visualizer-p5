@@ -1,15 +1,5 @@
 /* TO DO
 
-CORRECT NUMERICAL PRECISION
-    idea 1: don't flip between representations
-    - keep everything in math.js
-    -
-
-    idea 2: calculate at higher precision
-
-    idea 3: just make dt smaller :)
-    - 0.001 works!
-
 POLISH
     - handle position of time trajectory relative to phase plane
         -
@@ -18,9 +8,21 @@ POLISH
     - rollover effect for phase plane?
     - when explainer text is hovered-over, point to relevant
 
+MOSTLY COMPLETED
+    CORRECT NUMERICAL PRECISION
+        idea 1: don't flip between representations (didnt make a difference)
+        - keep everything in math.js
+        -
+
+        idea 2: calculate at higher precision (didnt make a difference?)
+
+        idea 3: just make dt smaller :) (works!)
+        - 0.001 works!
+
+        idea 4: use an ode solver (later)
+        - implement midpoint method?
 
 POSTPONED
-
  * look for dynamical system libraries
  *  https://github.com/JuliaDynamics/DynamicalSystems.jl/blob/master/docs/src/index.md
  *      LSIM discretizes anyway...
@@ -100,7 +102,6 @@ function setup() {
     cHigh = color(0, 238, 255);
     cLow = color(159, 109, 214);
 
-
     c1 = color(176, 57, 57); //red
     c2 = color(77, 150, 213); //blue
     c3 = color(241, 234, 143); //yellow
@@ -136,24 +137,17 @@ function setup() {
     dEig1.origin.set(150,100)
     //dEig1.xScale = 0.1;
     dEig1.setScale(.1)
-    dEig1.xScale = 0.01;
+    dEig1.xScale = 0.02;
 
     dEig1.xSnap = 5;
     dEig1.doSnap = true;
 
     dEig2.origin.set(150,100)
     dEig2.setScale(.1)
-    dEig2.xScale = 0.01;
+    dEig2.xScale = 0.02;
 
     dEig2.xSnap = 5;
     dEig2.doSnap = true;
-
-
-
-    //dEig2.xScale = 0.1;
-
-
-
 
     //demoFun = (driver, child) => child.color = color('white')
     mirrorY = (driver, child) => child.set( driver.x, 2*driver.origin.y-driver.y ) ;
@@ -164,17 +158,26 @@ function setup() {
 
     linkPoints(dEig1, dEig2, mirrorY)
 
-
     //linkPoints(dX0, dEq, updateX0)
 
     //Initial trajectory
-    dT = new DraggableTrajectory(dX0.x,dX0.y, 0.001,6000)
+    // //reasonable
+    // let dtSim = 0.001
+    // let nSimPoints =  6000;
+
+    //high precision
+    let dtSim = 0.001
+    //let nSimPoints = 20000;
+    let nSimPoints = 6000;
+
+    dT = new DraggableTrajectory(dX0.x,dX0.y, dtSim, nSimPoints)
     dT.origin.set(createVector(350,100))
     dT.hw = 30;
+    /*
     let aLam1 = math.complex({re:-0.1, im:0.8});
     let aLam2 = math.complex({re:-0.1, im:-0.8});
     dT.Amat = generate2Dsys(aLam1,aLam2);
-
+    */
 
 
     let nudge = (driver, child) =>
