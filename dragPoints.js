@@ -1,60 +1,129 @@
 //https://editor.p5js.org/codingtrain/sketches/U0R5B6Z88
 
-class Draggable {
-    constructor(x=100, y=100) {
+class Draggable extends p5.Vector{
+    constructor(x=100, y=100, colorIn=color(55, 241, 147)) {
+        super(x,y)
         this.dragging = false;
         this.rollover = false;
-
-        this.x = x;
-        this.y = y;
         this.hw = 10;
         this.hh = 10;
+        this.color = colorIn;//color(255, 241, 147);
+        this.children = [];
+        //updates the position of its children according to the following rule:
+        //this.linkFun = (myV, childV) => child.set(createVector(childV.x, myV.y))
+        this.linkFun = (driver, child) => child.set(child.x, child.y)
+        this.xScale=1;
+        this.yScale=1;
 
-        this.color = color(255, 241, 147);
+        this.moveDelta = createVector(0,0);
+
+        //by default the origin is at 0,0 (of the canvas) and is not interactable
+        this.origin = createVector(0,0);
+        this.showOrigin = false;
+
+        this.doSnap = false;
+        this.xSnap = 0;
+        this.ySnap = 0;
     }
 
     over(){
-        if (this.isInHitbox()){
-              this.rollover = true;
-        } else {
-              this.rollover = false;
-        }
+        this.rollover = this.isInHitbox();
     }
     update(){
         if (this.dragging){
+
+            let prevPos = createVector(this.x,this.y);
+
             this.x = mouseX + this.offsetX;
             this.y = mouseY + this.offsetY;
+
+            //snap coordinates?
+            if (this.doSnap)
+            {
+                let v = this.getLocalCoords();
+                if (abs(v.x) < this.xSnap)
+                {
+                    this.x -= v.x;
+                }
+                if (abs(v.y) < this.ySnap)
+                {
+                    this.y -= v.y;
+                }
+            }
+
+            this.moveDelta = prevPos.sub(this).mult(-1);
+
+
+            //this allows points to have their positions linked according to the linkFun
+            for (let [idx, child] of this.children.entries())
+            {
+                //this.linkFuns[i](this, child)
+                this.linkFun(this, child)
+            }
         }
+    }
+
+    getLocalCoords()
+    {
+        let pos = this.copy();
+        let delta = pos.sub(this.origin);
+        //let mag = delta.mag();
+        return delta;
+    }
+    getValue()
+    {
+        let delta = this.getLocalCoords();
+        delta.x *= this.xScale;
+        delta.y *= this.yScale;
+        return delta;
+    }
+    //EigPoint.getLam() = () => vec2complex( this.getValue() )
+    //e.g. EigPoint.lam = vec2complex(getValue())
+    //e.g. TrajPoint.x0 = getValue()
+    setScale(newScale)
+    {
+        this.xScale = newScale;
+        this.yScale = newScale;
     }
 
     show(){
         noStroke();
         fill(this.color);
         if (this.dragging) {
-            fill('white');
+            //fill(   lightenColor(lightenColor(this.color))   );
         } else if (this.rollover) {
-            stroke('white');
+            stroke( lightenColor(this.color) );
             fill(this.color);
+
         } else {
           fill(this.color);
         }
-        ellipse(this.x, this.y, this.hw);
+        this.drawCircle();
+
+         if (this.showOrigin)
+         {
+             noFill()
+             stroke(this.color);
+             this.origin.drawCircle();
+         }
     }
+
+    setColor(newColor) { this.color = newColor; }
+    drawCircle() { ellipse(this.x, this.y, this.hw); }
 
     pressed(){
         if (this.isInHitbox()){
+            print("Clicked me!")
             this.dragging = true;
             this.offsetX = this.x - mouseX;
             this.offsetY = this.y - mouseY;
         }
-
     }
 
     released() {
       // Quit dragging
       this.dragging = false;
     }
-
 
     isInHitbox()
     {
@@ -63,10 +132,21 @@ class Draggable {
     }
 }
 
+/*
+
+Likely we want this(.vec) to be the x0 of the trajectory in visual space
+- have some map to
+Do we want to move the origin of the trajec
+
+
+ */
+
+
+
 class DraggableEquation extends Draggable {
-    constructor(x,y, eqStr) {
-        super(x,y)
-        this.color = color(250, 149, 84);
+    constructor(x,y, pointColor=color('red'), eqStr="") {
+        super(x,y,pointColor)
+        this.color = pointColor;color(250, 149, 84);
         this.textOffsetX = 15;//10.0;
         this.textOffsetY = -20;//-15.0;
         this.eqHeader = eqStr;
@@ -97,9 +177,86 @@ class DraggableEquation extends Draggable {
         else {
             katex.render('', this.texSpec.elt)
         }
-
-        ellipse(this.x,this.y,this.hw)
+        this.drawCircle();
 
     }
 
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+class DraggableTrajectory extends Draggable {
+    constructor(x,y, dt=0.1, nSteps=5000) {
+        super(x,y)
+        this.color = color(120, 206, 214);//color('blue');//color(255, 248, 68)
+        //rgb(120, 206, 214)
+        this.origin = new Draggable(0,0,this.color);
+        this.origin.color = this.color; //color(255,255,255,0);
+
+        this.children.push(this.origin)
+
+        this.trajArray = [];
+        this.timeArray = [];
+        this.dt = dt;
+        this.Amat = generate2Dsys(.99,.99);
+
+        this.nSteps = nSteps;
+
+        this.trajectoryStartFun = () => translate(this.getValue().x, 0)
+        //for some reason already translated to this.y ?
+        this.tScale = 75;
+    }
+    show() {
+        //super.show()
+        //if (this.rollover){}
+        noFill();
+        stroke(this.color);
+        strokeWeight(2)
+        //ellipse(this.origin.x,this.origin.y,this.origin.hw)
+        ellipse(this.x,this.y,this.hw)
+        //drawArrow(this.origin,this.copy().sub(this.origin),'red')
+
+        push(); // Now in origin coordinates
+        translate(this.origin.x, this.origin.y)
+        let d = this.getValue().mag()
+        strokeWeight(4)
+        stroke(color(69, 66, 71)); // grey for trajectory
+
+//PLOT trajectory vs time
+        push()
+        this.trajectoryStartFun();
+        plotTX(this.timeArray, this.trajArray, 2, this.tScale)
+        pop()
+
+//PLOT trajectory in phase spcae
+        //back to main color
+        stroke(this.color);
+        strokeWeight(2)
+        plotVecArray(this.trajArray)
+
+        pop(); // Left origin coordinates
+
+    }
+    updateSys(newEig)
+    {
+        // TODO: right now this only works for a single mirrored complex eigenvalue
+        this.Amat = generate2Dsys(newEig)
+    }
+    generateMyTrajectory(x0=this.getValue(), mat=this.Amat, dt=this.dt, nSteps=this.nSteps)
+    {
+        let XT = generateTrajectory(x0,mat,dt,nSteps);
+        this.trajArray = XT[0];
+        this.timeArray = XT[1];
+    }
+}
+
+
+
+function linkPoints(p1, p2, linkFun=p1.linkFun)
+{
+    p1.children.push(p2)
+    p1.linkFun = linkFun;
+
+    p2.children.push(p1)
+    p2.linkFun = linkFun;
 }
