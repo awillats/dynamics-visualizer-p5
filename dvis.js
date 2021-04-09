@@ -65,6 +65,7 @@ can calculate eigenvalues
 let tex;
 let colorHeader;
 let eqStr;
+let katexStr;
 
 let cBack;
 let cHigh;
@@ -265,7 +266,10 @@ function drawBack(){
 }
 function drawFore(){
     tex.position(135, 165);
-    katex.render(eqStr, tex.elt);
+    //katex.render(eqStr, tex.elt);
+    //katexStr = katex.renderToString(eqStr, tex.elt);
+    //console.log(katexStr)
+
 }
 function draw(){
     drawBack();

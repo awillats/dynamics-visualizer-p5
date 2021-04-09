@@ -3,8 +3,11 @@ function setupEquationBlock(tex)
     tex = createP();
     tex.style('font-size', '12px');
     tex.position(50, height-300);
-    katex.render(eqStr, tex.elt);
+    //katex.render(eqStr, tex.elt);
+    //
 
+    katexStr = katex.renderToString(eqStr, tex.elt);
+    tex.html(`<div class="EQDIV">${katexStr}</div>`)
     tex.mouseOver(eOver);
     tex.mouseOut(eOut);
     return tex;
@@ -69,25 +72,28 @@ function showFile(input) {
    fileReader.readAsText(file);
 }
 
+
+
+
 // Try more regexes here: https://regex101.com/r/0XhJre/1
+// TRY this regex structure instead!!
+// https://stackoverflow.com/questions/46029392/search-and-replace-outer-tag-in-atom-using-regex
+// <span class="klass">(.*?)</span>
+// <code>$1</code>
 
 
 function repCMDandDef(strArray, findPre, repPre)
 {
-    let findCmdPre = `\\${findPre}{`
-    let repCmdPre = `${repPre}{` //why doesnt this also need \\ ????
-    let findDefPre = `\LBC{\\\\${findPre}Def}`
-    let repDefPre = `\LBC{\\${repPre}Def}PRE`
+    let findCmdPre = `\\\\${findPre}{`
+    let repCmdPre = `\\${repPre}{`
+    let findDefPre = `\\\\LBC{\\\\${findPre}Def}`
+    let repDefPre = `\\LBC{\\${repPre}Def}`
 
-
+    //e.g. replace ( \CY{xyz} with \CR{xyz} )
     let textRepd = repEachBracket(strArray,findCmdPre,`}`,repCmdPre,`}`);
-//    textRepd = repEachBracket(textRepd,`\LBC{\${cmdPre}Def}`,'\RBC{}',`\LBC{\${repCmdDef}`,'\RBC{}');
 
-    // let aregp = new RegExp("CYDef}","gms");
-    // console.log(textRepd.match(aregp))
-
-
-    textRepd = repEachBracket(textRepd,findDefPre,'\RBC{}',repDefPre,'\RBC{}POST');
+    //e.g. replace ( \LBC{\CYDef}x\RBC{} with \LBC{\CRDef}x\RBC{} )
+    textRepd = repEachBracket(textRepd,findDefPre,'\RBC{}',repDefPre,'\RBC{}');
 
     return textRepd;
 }

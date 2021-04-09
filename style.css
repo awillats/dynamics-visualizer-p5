@@ -16,3 +16,6 @@ p {
     -ms-user-select: none;
     user-select: none;
 }
+.EQDIV{
+    border: 5px outset red;
+}
