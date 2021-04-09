@@ -19,3 +19,6 @@ p {
 .EQDIV{
     border: 5px outset red;
 }
+.INNERCLASS{
+    color:#da62ae
+}

@@ -39,7 +39,7 @@ b_{2}
 \end{bmatrix}
 
 \\~\\
-\textrm{\CY{System dynamics}depend on a \CR{linear transformation}of} \\
+\textrm{\htmlClass{EQDIV}{\CY{System dynamics}}depend on a \CR{linear transformation}of} \\
 \textrm{its current state plus a term} \\
 \textrm{which describes the influence of \CB{external inputs}}
 \\~\\

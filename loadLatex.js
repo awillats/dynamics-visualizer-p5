@@ -5,9 +5,34 @@ function setupEquationBlock(tex)
     tex.position(50, height-300);
     //katex.render(eqStr, tex.elt);
     //
+// katex.render("\\href{https://katex.org/}{\\KaTeX}\n", /* element */, {"displayMode":true,"leqno":false,"fleqn":false,"throwOnError":true,"errorColor":"#cc0000","strict":"warn","output":"htmlAndMathml","trust":true,"macros":{"\\f":"#1f(#2)"}})
 
-    katexStr = katex.renderToString(eqStr, tex.elt);
-    tex.html(`<div class="EQDIV">${katexStr}</div>`)
+//    katexStr = katex.renderToString(eqStr, tex.elt, {trust:true});
+
+        // let linkStr = "\\href{https://katex.org/}{\\KaTeX}\n";
+//        let linkStr = String.raw`\href{https://katex.org/}{\KaTeX}` //works
+        let linkStr = String.raw`\htmlClass{EQDIV}{\href{https://katex.org/}{\KaTeX}} other`
+
+        let simpleOptions = {
+            trust:true,
+            //displayMode:false
+        }
+
+        // let fullOptions = {
+        //     "displayMode":true,"leqno":false,"fleqn":false,"throwOnError":true,
+        //     "errorColor":"#cc0000","strict":"warn",
+        //     "output":"htmlAndMathml","trust":true,
+        //     "macros":{"\\f":"#1f(#2)"}
+        // }
+        //
+        // katexStr = katex.renderToString("\\href{https://katex.org/}{\\KaTeX}\n", tex.elt,
+        //     fullOptions);
+        //         tex.html(`<div class="EQDIV">${katexStr}</div>`)
+
+        katex.render(eqStr, tex.elt,simpleOptions)
+
+
+
     tex.mouseOver(eOver);
     tex.mouseOut(eOut);
     return tex;
