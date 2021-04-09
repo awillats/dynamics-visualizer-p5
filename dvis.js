@@ -1,10 +1,10 @@
 /* TO DO
 
 POLISH
-    - draw yellow derivative vector!!
+    X draw yellow derivative vector!!
         -  color code X as light purple??
 
-    - remove clone of Eig1 (think it has to do with adding child node twice?)
+    ~? remove clone of Eig1 (think it has to do with adding child node twice?)
         - 1 drives 2 just defined
         - 2 driving 1 has a delay
 
@@ -14,8 +14,8 @@ POLISH
         -
     - ADD AXES - to phase plane
     - rollover effect for phase plane?
-    - when explainer text is hovered-over, point to relevant
-
+    :) when explainer text is hovered-over, point to relevant
+[]
 MOSTLY COMPLETED
     CORRECT NUMERICAL PRECISION
         idea 1: don't flip between representations (didnt make a difference)
@@ -63,7 +63,6 @@ can calculate eigenvalues
  */
 
 let tex;
-let texMouse;
 let colorHeader;
 let eqStr;
 
@@ -71,7 +70,7 @@ let cBack;
 let cHigh;
 let c1, c2, c3;
 
-let textIn;
+let textIn, textFlat, textOut;
 // = color(242, 212, 134);
 //   console.log(textIn)
 
@@ -90,13 +89,56 @@ let Amat;
 let dragArray = [];
 
 
+
+let isEigOver, isXDotOver, isX0Over, isXtOver;
+let isRealOver, isImagOver;
+// let isInputOver
+
+
+
 function preload()
 {
     textIn = loadStrings('eq1.txt');
+
 }
 
 
 function setup() {
+    console.log(textIn[41])
+    textFlat = textIn.join('\n');
+
+    //REPLACES both at once
+    textOut = repCMDandDef(textFlat,'CY','CH')
+    textOut = repCMDandDef(textOut,'CR','CH')
+
+
+    //textOut = repEachBracket(textFlat,'\CY{','}','\CB{','}');
+    //textOut = repEachBracket(textOut,`LBC{\\\\CYDef}`,'RBC{}',`LBC{\\CRDef}`,'RBC{}');
+
+
+//works
+//    textOut = repEachBracket(textOut,'\CYDef}','{','\CHDef}','{');
+    //textOut = repEachBracket(textOut,`{\\\\CYDef}`,'{',`{\\CHDef}`,'{');
+
+
+    // //textFlat = textFlat.join('\n');
+    //
+    //
+    // console.log('part2')
+    // textOut = repEachBracket(textFlat,'\CYDef}','{','\CHDef}','{');
+    // console.log('part3')
+    // //textOut = repEachBracket(textFlat,'\CB{','}','\CH{','}');
+
+    if (Array.isArray(textOut))
+    {
+        console.log("still an array, joining..")
+        textOut = textOut.join('');
+    }
+
+    console.log(textIn[41])
+
+
+
     createCanvas(1000, 600);
     colorMode(RGB,255);
     px = width / 5.0;
@@ -118,21 +160,14 @@ function setup() {
 
     // add colors and eq1.txt to latex input
     colorHeader = setupLatexColors(cText, cHigh,cLow, c1, c2, c3);
-    eqStr = colorHeader+textIn.join(' ');
+    eqStr = colorHeader+textOut;//textIn.join(' ');
 
-    //render LaTeX
-    tex = createP();
-    tex.style('font-size', '12px');
-    tex.position(50, height-300);
-    katex.render(eqStr, tex.elt);
-
-    texMouse = createP();
-    texMouse.style('font-size', '25px');
+    tex = setupEquationBlock();
 
     // TODO: replace class definitions to accept colors on construct
     dEq = new DraggableEquation(450,200, cLow, colorHeader);
-    dEig1 = new DraggableEquation(120,90, c1, colorHeader);
-    dEig2 = new DraggableEquation(120,110, c1, colorHeader);
+    dEig1 = new DraggableEquation(120,70, c1, colorHeader);
+    dEig2 = new DraggableEquation(120,200-dEig1.y, c1, colorHeader);
 
     //dEig2 = new DraggableEquation(120,110, c1, colorHeader);
     dX0 = new DraggableEquation(350,30, cLow, colorHeader);
@@ -213,6 +248,11 @@ function setup() {
     addDraggable(dEig2);
     addDraggable(dT);
     addDraggable(dX0);
+    isEigOver=false;
+    isXDotOver=false;
+    isX0Over=false;
+    isRealOver=false;
+    isImagOver=false;
 }
 // function setColor(d, clr)
 // {
@@ -255,8 +295,30 @@ function draw(){
     dragArray.forEach(function(item,index){
         item.update();
         item.over();
+    });
+
+    drawXDot(dT, c3);
+    if (isEigOver)
+    {
+        dEig1.over(true);
+        dEig2.over(true);
+        dEig1.show();
+    }
+
+
+    dragArray.forEach(function(item,index){
         item.show();
     });
+
+
+
+    //
+    // translate(dT.trajArray[0].x, dT.trajArray[0].y)
+    // line(0,0,dX.x, dX.y)
+    // %circle(dT.trajArray[0].x, dT.trajArray[0].y,10)
+    // circle(dT.trajArray[1].x, dT.trajArray[1].y,10)
+
+
 
 
 
@@ -304,6 +366,18 @@ function draw(){
   //    drawFore();
 }
 // end draw
+
+function eOver()
+{
+    isEigOver=true;
+    console.log("yas")
+}
+function eOut()
+{
+    isEigOver=false;
+}
+
+
 
 function addDraggable(drag){
     dragArray.push(drag);

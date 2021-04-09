@@ -1,4 +1,14 @@
+function setupEquationBlock(tex)
+{
+    tex = createP();
+    tex.style('font-size', '12px');
+    tex.position(50, height-300);
+    katex.render(eqStr, tex.elt);
 
+    tex.mouseOver(eOver);
+    tex.mouseOut(eOut);
+    return tex;
+}
 function setupLatexColors(cText,cHigh,cLow,c1,c2,c3)
 {
     eqStr = ""
@@ -57,4 +67,68 @@ function showFile(input) {
    }
   // var file2 = event.target.files[0];
    fileReader.readAsText(file);
+}
+
+// Try more regexes here: https://regex101.com/r/0XhJre/1
+
+
+function repCMDandDef(strArray, findPre, repPre)
+{
+    let findCmdPre = `\\${findPre}{`
+    let repCmdPre = `${repPre}{` //why doesnt this also need \\ ????
+    let findDefPre = `\LBC{\\\\${findPre}Def}`
+    let repDefPre = `\LBC{\\${repPre}Def}PRE`
+
+
+    let textRepd = repEachBracket(strArray,findCmdPre,`}`,repCmdPre,`}`);
+//    textRepd = repEachBracket(textRepd,`\LBC{\${cmdPre}Def}`,'\RBC{}',`\LBC{\${repCmdDef}`,'\RBC{}');
+
+    // let aregp = new RegExp("CYDef}","gms");
+    // console.log(textRepd.match(aregp))
+
+
+    textRepd = repEachBracket(textRepd,findDefPre,'\RBC{}',repDefPre,'\RBC{}POST');
+
+    return textRepd;
+}
+function repEachBracket(strArray,findPre,findPost, repPre,repPost)
+{
+  //finds between "\fStr{" and "}"
+  let regp = new RegExp(`${findPre}(.+?)${findPost}`,"gms");
+  console.log(regp)
+  //let regp =  /\\CR{(.+?)}/g;//'\\CR{.+?}/gm'
+  //let regp = new RegExp(`\LBC`,"gms");
+
+//    let regp = new RegExp(`${findPre}(.+?)${findPost}`,"gs");
+//
+//
+  if (Array.isArray(strArray))
+      for (let i=0; i<strArray.length; i++)
+      {
+        let s = strArray[i];
+        //s = s.replace(fStr,repStr);
+
+        let middle = s.match(regp)
+        if (middle){
+            console.log("a match!")
+            console.log(middle)
+        }
+
+        s = s.replaceAll(regp, `${repPre}$1${repPost}`)
+        strArray[i]=s;
+     }
+  else {
+      let middle = strArray.match(regp)
+      if (middle){
+          console.log("a match!!")
+          console.log(middle)
+      }
+      // console.log("replacing with:")
+      // console.log(`${repPre} XXX ${repPost}`)
+
+      strArray = strArray.replaceAll(regp, `${repPre}$1${repPost}`)
+  }
+
+  console.log('done')
+ return strArray;
 }

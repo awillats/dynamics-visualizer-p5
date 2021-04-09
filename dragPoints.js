@@ -26,8 +26,15 @@ class Draggable extends p5.Vector{
         this.ySnap = 0;
     }
 
-    over(){
-        this.rollover = this.isInHitbox();
+    over(override){
+        if (!override)
+        {
+            this.rollover = this.isInHitbox();
+        }
+        else
+        {
+            this.rollover = override;
+        }
     }
     update(){
         if (this.dragging){

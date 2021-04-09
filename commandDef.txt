@@ -1,0 +1,11 @@
+\def \cBracketDef {8ee2b2}
+\def \cInnerDef {138a8e}
+\newcommand{\leftBC}[2]{\color{#1} \left[ \color{#2}}
+\newcommand{\rightBC}[2]{\color{#1} \right] \color{#2}}
+
+\newcommand{\leftBMC}[2]{\leftBC{#1}{#2} \begin{matrix} }
+\newcommand{\rightBMC}[2]{\end{matrix} \rightBC{#1}{#2} }
+
+\newcommand{\LBC}[1]{\leftBMC{\cMainDef}{#1}}
+\newcommand{\RBC}[1]{\rightBMC{\cMainDef}{\cMainDef}}
+\color{\cMainDef}

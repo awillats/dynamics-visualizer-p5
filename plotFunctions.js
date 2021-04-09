@@ -26,6 +26,22 @@ function plotVecArray(vAry,v0=createVector(0,0))
 }
 
 
+function drawXDot(dTraj, arrowColor)
+{
+    //draw vector from x0 in the direction of xdot(x0)
+    let dX = dTraj.trajArray[1].copy();
+    dX.sub(dTraj.trajArray[0]);
+    dX.mult(1/dTraj.dt);
+    dX.mult(1/5); //vector scaling fudge factor
+
+    push()
+    noFill()
+    stroke(c3)
+    translate(dTraj.origin.x,dTraj.origin.y)
+    drawArrow(dTraj.trajArray[0], dX, c3);
+    pop()
+}
+
 function drawEigenAxes(eigp)
 {
     let dx = 100;
@@ -47,7 +63,7 @@ function drawEigenAxes(eigp)
 function drawArrow(base, vec, myColor) {
   push();
   stroke(myColor);
-  strokeWeight(3);
+  strokeWeight(2);
   fill(myColor);
   translate(base.x, base.y);
   line(0, 0, vec.x, vec.y);
