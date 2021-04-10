@@ -249,16 +249,14 @@ function setup() {
     addDraggable(dEig2);
     addDraggable(dT);
     addDraggable(dX0);
+
     isEigOver=false;
     isXDotOver=false;
     isX0Over=false;
+    isXtOver=false;
     isRealOver=false;
     isImagOver=false;
-}
-// function setColor(d, clr)
-// {
-//     d.color = clr;
-// }
+} // END of setup()
 
 
 function drawBack(){
@@ -269,29 +267,20 @@ function drawFore(){
     //katex.render(eqStr, tex.elt);
     //katexStr = katex.renderToString(eqStr, tex.elt);
     //console.log(katexStr)
-
 }
 function draw(){
     drawBack();
     fill(c3);
 
-
-
 // Update dynamical system
     //could be moved to a listener so it only updates when x0 updates?
     x0 = createVector(dX0.x-width/2,dX0.y-height/2);
-
-
-
-    //let aLam1 = math.complex({re:-0.1, im:0.8});
-    //let aLam2 = math.complex({re:-0.1, im:-0.8});
 
     let aLam1 = vec2complex(dEig1.getValue())
     let aLam2 = vec2complex(dEig2.getValue())
 
     dT.Amat = generate2Dsys(aLam1,aLam2);
     dT.generateMyTrajectory();
-
 
 
     //drawArrow(dT.origin,x0,'white')
@@ -301,7 +290,13 @@ function draw(){
         item.over();
     });
 
-    drawXDot(dT, c3);
+    if (isXtOver)
+    {
+        dT.over(true);
+    }
+    if (isXDotOver){
+        drawXDot(dT, c3);
+    }
     if (isEigOver)
     {
         dEig1.over(true);
@@ -313,16 +308,6 @@ function draw(){
     dragArray.forEach(function(item,index){
         item.show();
     });
-
-
-
-    //
-    // translate(dT.trajArray[0].x, dT.trajArray[0].y)
-    // line(0,0,dX.x, dX.y)
-    // %circle(dT.trajArray[0].x, dT.trajArray[0].y,10)
-    // circle(dT.trajArray[1].x, dT.trajArray[1].y,10)
-
-
 
 
 
@@ -364,22 +349,12 @@ function draw(){
 
 
     drawEigenAxes(dEig1);
-  //tex.position(px,py)
-  //katex.render("x(t)",tex.elt)
-  //
   //    drawFore();
 }
-// end draw
 
-function eOver()
-{
-    isEigOver=true;
-    console.log("yas")
-}
-function eOut()
-{
-    isEigOver=false;
-}
+
+
+//NOTE: see textClassMouseFuns for mouseOver specification
 
 
 

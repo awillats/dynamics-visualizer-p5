@@ -3,42 +3,60 @@ function setupEquationBlock(tex)
     tex = createP();
     tex.style('font-size', '12px');
     tex.position(50, height-300);
-    //katex.render(eqStr, tex.elt);
-    //
-// katex.render("\\href{https://katex.org/}{\\KaTeX}\n", /* element */, {"displayMode":true,"leqno":false,"fleqn":false,"throwOnError":true,"errorColor":"#cc0000","strict":"warn","output":"htmlAndMathml","trust":true,"macros":{"\\f":"#1f(#2)"}})
 
-//    katexStr = katex.renderToString(eqStr, tex.elt, {trust:true});
-
-        // let linkStr = "\\href{https://katex.org/}{\\KaTeX}\n";
-//        let linkStr = String.raw`\href{https://katex.org/}{\KaTeX}` //works
-        let linkStr = String.raw`\htmlClass{EQDIV}{\href{https://katex.org/}{\KaTeX}} other`
-
-        let simpleOptions = {
-            trust:true,
-            //displayMode:false
-        }
-
-        // let fullOptions = {
-        //     "displayMode":true,"leqno":false,"fleqn":false,"throwOnError":true,
-        //     "errorColor":"#cc0000","strict":"warn",
-        //     "output":"htmlAndMathml","trust":true,
-        //     "macros":{"\\f":"#1f(#2)"}
-        // }
-        //
-        // katexStr = katex.renderToString("\\href{https://katex.org/}{\\KaTeX}\n", tex.elt,
-        //     fullOptions);
-        //         tex.html(`<div class="EQDIV">${katexStr}</div>`)
-
-        katex.render(eqStr, tex.elt,simpleOptions)
+    // let linkStr = String.raw`\htmlClass{EQDIV}{\href{https://katex.org/}{\KaTeX}} other`
+    let simpleOptions = {
+        trust:true,
+    }
+    katex.render(eqStr, tex.elt,simpleOptions)
 
 
+    // attach color-class specific mouseOver functions
 
-    tex.mouseOver(eOver);
-    tex.mouseOut(eOut);
+    let redEq = selectAll('.CRClass',tex);
+    console.log(redEq)
+    redEq.forEach( (eq) =>{
+        eq.mouseOver(eigOverFn)
+        eq.mouseOut(eigOutFn)
+    });
+
+    let dynEq = selectAll('.CYClass',tex);
+    console.log(dynEq)
+    dynEq.forEach( (eq) =>{
+        eq.mouseOver(dynOverFn)
+        eq.mouseOut(dynOutFn)
+    });
+
+    let initEq = selectAll('.CLClass',tex);
+    initEq.forEach( (eq) =>{
+        eq.mouseOver(x0OverFn)
+        eq.mouseOut(x0OutFn)
+    });
+
+     let xtEq = selectAll('.XTClass',tex);
+    xtEq.forEach( (eq) =>{
+        eq.mouseOver(xtOverFn)
+        eq.mouseOut(xtOutFn)
+    });
+
+    let realEq = selectAll('.RealClass',tex);
+    realEq.forEach( (eq) =>{
+        eq.mouseOver(realOverFn)
+        eq.mouseOut(realOutFn)
+    });
+
+    let imagEq = selectAll('.ImagClass',tex);
+    imagEq.forEach( (eq) =>{
+        eq.mouseOver(imagOverFn)
+        eq.mouseOut(imagOutFn)
+    });
+/*
+*/
     return tex;
 }
 function setupLatexColors(cText,cHigh,cLow,c1,c2,c3)
 {
+    //automate this with a dictionary: {tag:"CH",color:c1,mouseOverFun:eigMouseOver()}
     eqStr = ""
     //cMain, cBracket, cInner must be defined, either here or in eq1.txt
     eqStr += buildColorDef("cMain", pColorToHexStr(cText))
@@ -60,7 +78,14 @@ function buildColorMacro(macroName, macroColorStr)
 {
     //expects macroColor to be a string formatted like "#AABBCC"
     defStr = buildColorDef(macroName,macroColorStr)
-    return defStr+"\\newcommand{\\"+macroName+"}[1]{\\textcolor{"+macroColorStr.substring(1)+"}{#1} } \n"
+
+    //old functional def
+    //return defStr+"\\newcommand{\\"+macroName+"}[1]{\\textcolor{"+macroColorStr.substring(1)+"}{#1}} \n"
+
+    //twist: add html class in with macro defintion so we can find these later
+    return defStr+"\\newcommand{\\"+macroName+"}[1]{\\htmlClass{"+macroName+"Class}{\\textcolor{"+macroColorStr.substring(1)+"}{#1}}} \n"
+
+    //return defStr+String.raw`\\newcommand{\\${macroName}}[1]{\\textcolor{${macroColorStr.substring(1)}}{#1}} \n`
 }
 
 function buildColorDef(macroName, macroColorStr)
@@ -115,11 +140,11 @@ function repCMDandDef(strArray, findPre, repPre)
     let repDefPre = `\\LBC{\\${repPre}Def}`
 
     //e.g. replace ( \CY{xyz} with \CR{xyz} )
-    let textRepd = repEachBracket(strArray,findCmdPre,`}`,repCmdPre,`}`);
+//let textRepd = repEachBracket(strArray,findCmdPre,`}`,repCmdPre,`}`);
 
     //e.g. replace ( \LBC{\CYDef}x\RBC{} with \LBC{\CRDef}x\RBC{} )
-    textRepd = repEachBracket(textRepd,findDefPre,'\RBC{}',repDefPre,'\RBC{}');
-
+//textRepd = repEachBracket(textRepd,findDefPre,'\RBC{}',repDefPre,'\RBC{}');
+    textRepd = strArray;
     return textRepd;
 }
 function repEachBracket(strArray,findPre,findPost, repPre,repPost)

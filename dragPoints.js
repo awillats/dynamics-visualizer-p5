@@ -229,11 +229,14 @@ class DraggableTrajectory extends Draggable {
         strokeWeight(4)
         stroke(color(69, 66, 71)); // grey for trajectory
 
-//PLOT trajectory vs time
-        push()
-        this.trajectoryStartFun();
-        plotTX(this.timeArray, this.trajArray, 2, this.tScale)
-        pop()
+        if (this.rollover){
+            //PLOT trajectory vs time
+                    push()
+                    this.trajectoryStartFun();
+                    plotTX(this.timeArray, this.trajArray, 2, this.tScale)
+                    pop()
+        }
+
 
 //PLOT trajectory in phase spcae
         //back to main color
