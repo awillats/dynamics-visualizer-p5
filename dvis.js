@@ -1,7 +1,11 @@
 /* TO DO
     - add 2x real eigenvalues
     - add eigenvector visualization
+    - add circuit view (weight sliders)
+    - add landscape view (patch-stitch)
 POLISH
+    - select between circuit and eig-plane
+    - select between forcefield and landscape
 
     - handle position of time trajectory relative to phase plane
 

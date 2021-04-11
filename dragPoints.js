@@ -194,7 +194,7 @@ class DraggableEquation extends Draggable {
 /////////////////////////////////////////////////////////////////////////////
 
 class DraggableTrajectory extends Draggable {
-    constructor(x,y, color= color(120, 206, 214), dt=0.1, nSteps=5000) {
+    constructor(x,y, color=color(120, 206, 214), dt=0.1, nSteps=5000) {
         super(x,y,color)
         //this.color = color(120, 206, 214);//color('blue');//color(255, 248, 68)
         //rgb(120, 206, 214)
