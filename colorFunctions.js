@@ -11,20 +11,20 @@ function hueShift(pColor)
     return c;
 
 }
-function lightenColor(pColor)
+function lightenColor(pColor, lightenFactor=1.1)
 {    /*
     //colorMode(HSB,255);
 
     let s = saturation(pColor);
     let b = brightness(pColor);
 */
-    let L = 1.1;
+    // let L = 1.1;
     let r = red(pColor);
     let g = green(pColor);
     let b = blue(pColor);
     let a = alpha(pColor);
 
-    let cOut = color(r*L,g*L,b*L,a);
+    let cOut = color(r*lightenFactor,  g*lightenFactor,  b*lightenFactor,  a);
     //colorMode(RGB,255);
     return cOut;
 }

@@ -2,7 +2,7 @@ function setupEquationBlock(tex)
 {
     tex = createP();
     tex.style('font-size', '12px');
-    tex.position(50, height-300);
+    tex.position(50, height-350);
 
     // let linkStr = String.raw`\htmlClass{EQDIV}{\href{https://katex.org/}{\KaTeX}} other`
     let simpleOptions = {
