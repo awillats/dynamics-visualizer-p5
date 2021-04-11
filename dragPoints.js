@@ -26,8 +26,16 @@ class Draggable extends p5.Vector{
         this.ySnap = 0;
     }
 
-    over(){
-        this.rollover = this.isInHitbox();
+    over(override){
+        if (!override)
+        {
+            this.rollover = this.isInHitbox();
+        }
+        else
+        {
+            this.rollover = override;
+        }
+        return this.rollover;
     }
     update(){
         if (this.dragging){
@@ -186,9 +194,9 @@ class DraggableEquation extends Draggable {
 /////////////////////////////////////////////////////////////////////////////
 
 class DraggableTrajectory extends Draggable {
-    constructor(x,y, dt=0.1, nSteps=5000) {
-        super(x,y)
-        this.color = color(120, 206, 214);//color('blue');//color(255, 248, 68)
+    constructor(x,y, color= color(120, 206, 214), dt=0.1, nSteps=5000) {
+        super(x,y,color)
+        //this.color = color(120, 206, 214);//color('blue');//color(255, 248, 68)
         //rgb(120, 206, 214)
         this.origin = new Draggable(0,0,this.color);
         this.origin.color = this.color; //color(255,255,255,0);
@@ -222,13 +230,15 @@ class DraggableTrajectory extends Draggable {
         strokeWeight(4)
         stroke(color(69, 66, 71)); // grey for trajectory
 
-//PLOT trajectory vs time
-        push()
-        this.trajectoryStartFun();
-        plotTX(this.timeArray, this.trajArray, 2, this.tScale)
-        pop()
+        if (this.rollover){
+            //PLOT trajectory vs time
+            push()
+            this.trajectoryStartFun();
+            plotTX(this.timeArray, this.trajArray, 2, this.tScale)
+            pop()
+        }
 
-//PLOT trajectory in phase spcae
+        //PLOT trajectory in phase spcae
         //back to main color
         stroke(this.color);
         strokeWeight(2)

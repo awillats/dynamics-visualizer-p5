@@ -24,11 +24,11 @@ a_{11} & a_{12}\\
 a_{21} & a_{22}
 \RBC{}
 
-\begin{bmatrix}
+\LBC{\CLDef}
 x_1
 \\
 x_2
-\end{bmatrix}
+\RBC{}
 +
 \begin{bmatrix}
 b_{1}\\
@@ -39,21 +39,21 @@ b_{2}
 \end{bmatrix}
 
 \\~\\
-\textrm{\CY{System dynamics}depend on a \CR{linear transformation}of} \\
-\textrm{its current state plus a term} \\
-\textrm{which describes the influence of \CB{external inputs}}
+\textrm{\htmlClass{EQDIV}{\CY{System dynamics}} depend on a \CR{linear transformation}} \\
+\textrm{of its \CL{current state} plus a term which describes} \\
+\textrm{the influence of \CB{external inputs}}
 \\~\\
 
 \textrm{the solution to this differential equation looks like}
 \\~\\
-x_1(t) = \CL{x_1(0)} \, e^{\CR{\lambda_1} t}
+\htmlClass{XTClass}{\CH{x_1(t)}} = \CL{x_1(0)} \, e^{\CR{\lambda_1} t}
 \\~\\
 
-\textrm{the real part of the \CR{eigenvalues} scale the rate of decay}\\
-\textrm{for trajectories of } x(t) \textrm{ in the direction of} \\
-\textrm{the associated eignevector.}
+\textrm{\htmlClass{RealClass}{the \textbf{real part} of} the \CR{eigenvalues} scale the rate of decay}\\
+\textrm{for trajectories of } \htmlClass{XTClass}{\CH{x(t)}} \textrm{ in the direction of} \\
+\textrm{the associated eignevector}
 
 \\~\\
-\textrm{the imaginary part of the \CR{eigenvalues} scale the rate of oscillation}\\
-\textrm{for trajectories of } x(t)
+\textrm{\htmlClass{ImagClass}{the \textbf{imaginary part} of} the \CR{eigenvalues} scale the rate of oscillation}\\
+\textrm{for trajectories of } \htmlClass{XTClass}{\CH{x(t)}}
 \\~\\
